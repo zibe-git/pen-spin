@@ -1,0 +1,21 @@
+{
+  "name": "pen-spin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun scripts/serve.ts --dev",
+    "build": "bun scripts/build.ts",
+    "serve": "bun scripts/serve.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "shots": "bun scripts/build.ts && bun scripts/shots.ts --cams",
+    "report": "bun scripts/build.ts && bun scripts/report.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.3",
+    "lighthouse": "^13.5.0",
+    "puppeteer-core": "^25.13.0",
+    "typescript": "^7.0.2"
+  }
+}

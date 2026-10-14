@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f1115">
+<meta name="description" content="Pen spinning on a 3D hand: real tricks, real combos. Tap on the catch to link the next trick.">
+<meta name="color-scheme" content="dark">
+<title>Pen Spin – 3D pen spinning combos</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>/*CSS*/</style>
+</head>
+<body>
+<canvas id="cv" aria-hidden="true"></canvas>
+
+<main id="home" class="scr">
+  <header class="brand">
+    <h1>Pen<span>Spin</span></h1>
+    <p>Real pen spinning tricks on a 3D hand. Tap on the catch to link the next one.</p>
+  </header>
+  <nav class="menu" aria-label="Main menu">
+    <button class="btn big" data-go="flow"><b>Play</b><small>Flow · when you tap picks the next trick</small></button>
+    <div class="row">
+      <button class="btn" data-go="ladder"><b>Combos</b><small id="hStars">0★</small></button>
+      <button class="btn" data-go="endless"><b>Endless</b><small id="hEndless">best 0</small></button>
+    </div>
+    <div class="row">
+      <button class="btn" data-go="book"><b>Trick Book</b><small id="hBook">0 / 0</small></button>
+      <button class="btn" data-go="settings"><b>Settings</b><small>pens · timing · hand</small></button>
+    </div>
+  </nav>
+</main>
+
+<section id="play" class="scr" hidden>
+  <header class="hud">
+    <button id="bPause" class="icon" aria-label="Pause"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+    <div class="streak"><b id="streak">0</b><span>in a row</span></div>
+    <div class="pts"><b id="score">0</b><span id="mult">x1.0</span></div>
+    <button id="bCam" class="icon" aria-label="Change camera"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
+  </header>
+  <button id="bView" class="chip view" hidden>Reset view</button>
+  <div id="pops" class="pops" aria-live="polite"></div>
+  <section class="dock">
+    <div class="tline"><b id="trick">Ready</b><span id="slot"></span></div>
+    <div class="tbar" id="tbar" aria-hidden="true"><i id="tWin"></i><i id="tGold"></i><i id="tPress"></i><i id="tNeedle"></i></div>
+    <div class="steps" id="steps"></div>
+    <button id="spin" class="spin idle"><b id="spinL">SPIN</b><small id="spinS">tap to start</small></button>
+  </section>
+</section>
+
+<dialog id="dLadder" class="sheet" aria-labelledby="tLadder">
+  <div class="head"><h2 id="tLadder">Combos</h2><button class="ghost" data-close>Done</button></div>
+  <p class="sub">Real combos from the pen spinning community. Land one to unlock the next; PERFECT links earn stars.</p>
+  <ol id="ladder" class="list"></ol>
+</dialog>
+
+<dialog id="dBook" class="sheet" aria-labelledby="tBook">
+  <div class="head"><h2 id="tBook">Trick Book</h2><button class="ghost" data-close>Done</button></div>
+  <div class="meter"><i id="bookBar"></i></div>
+  <p class="sub" id="bookSub"></p>
+  <div id="book"></div>
+</dialog>
+
+<dialog id="dSettings" class="sheet" aria-labelledby="tSettings">
+  <div class="head"><h2 id="tSettings">Settings</h2><button class="ghost" data-close>Done</button></div>
+  <div class="opt"><span>Pen</span><div class="pens" id="pens"></div></div>
+  <div class="opt"><span>Hand<small>a left hand mirrors every trick</small></span><div class="seg" id="oHand"><button data-v="left">Left</button><button data-v="right">Right</button></div></div>
+  <label class="opt"><span>Sound</span><input type="checkbox" id="oSound"></label>
+  <label class="opt"><span>Vibration<small>Android</small></span><input type="checkbox" id="oHaptics"></label>
+  <label class="opt"><span>Western slot notation<small>T1, 12, 23… instead of 12, 23, 34…</small></span><input type="checkbox" id="oWestern"></label>
+  <div class="opt col"><span>Tap timing <output id="oOffOut">0 ms</output><small>if PERFECT feels late, calibrate or move right</small></span>
+    <input type="range" id="oOff" min="-60" max="200" step="5" aria-label="Tap timing offset">
+    <button class="btn" id="bCalib">Calibrate by tapping along</button></div>
+  <button class="ghost danger" id="bReset">Reset all progress</button>
+</dialog>
+
+<dialog id="dPause" class="sheet small" aria-labelledby="tPause">
+  <h2 id="tPause">Paused</h2>
+  <label class="opt"><span>Practice<small>slow motion, not scored</small></span><input type="checkbox" id="oPractice"></label>
+  <button class="btn big" id="bResume"><b>Resume</b></button>
+  <button class="btn" id="bHow"><b>How to play</b></button>
+  <button class="btn" id="bQuit"><b>Quit to menu</b></button>
+</dialog>
+
+<dialog id="dHow" class="sheet small" aria-labelledby="tHow">
+  <h2 id="tHow">How to play</h2>
+  <ol class="how">
+    <li><b>Tap SPIN</b> to start a trick.</li>
+    <li>While the pen spins, the button waits. When the needle reaches the window it <b class="go">lights up</b>: tap to link the next trick.</li>
+    <li>Tap in the <b class="gd">gold</b> zone for PERFECT: it raises your multiplier. Too early and the pen drops.</li>
+    <li>Stop tapping to bank the combo bonus: links² × 10 × multiplier.</li>
+  </ol>
+  <p class="sub">In <b>Flow</b>, <i>when</i> you tap (early · perfect · late) picks which connected trick comes next. Drag the hand to look around.</p>
+  <button class="btn big" data-close><b>Got it</b></button>
+</dialog>
+
+<dialog id="dResult" class="sheet small" aria-labelledby="tResult">
+  <h2 id="tResult"></h2>
+  <p class="stars" id="rStars"></p>
+  <p class="sub" id="rSub"></p>
+  <button class="btn big" id="rNext"><b>Next combo</b></button>
+  <button class="btn" id="rRetry"><b>Retry</b></button>
+  <button class="btn" data-close><b>Close</b></button>
+</dialog>
+
+<dialog id="dCalib" class="sheet small" aria-labelledby="tCalib">
+  <h2 id="tCalib">Tap along</h2>
+  <p class="sub">Tap the pad on each beat. 8 beats.</p>
+  <button class="pad" id="pad"><b id="padN">Start</b></button>
+  <p class="sub" id="calibOut"></p>
+  <button class="btn" data-close><b>Done</b></button>
+</dialog>
+
+<p id="toast" class="toast" role="status"></p>
+<!--JS-->
+</body>
+</html>

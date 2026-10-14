@@ -1,0 +1,12 @@
+{
+  "name": "Pen Spin",
+  "short_name": "Pen Spin",
+  "description": "Pen spinning on a 3D hand: real tricks, real combos.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0f1115",
+  "theme_color": "#0f1115",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
